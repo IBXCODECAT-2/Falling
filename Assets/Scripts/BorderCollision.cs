@@ -14,9 +14,7 @@ public class BorderCollision : MonoBehaviour
         int random = Random.Range(0, audioObjects.Length);
 
         Instantiate(audioObjects[random], player.position, Quaternion.identity, null);
-        Destroy(audioObjects[random], destroyTime);
 
         Instantiate(particleObject, player.position, Quaternion.identity, null);
-        Destroy(particleObject, destroyTime);
     }
 }
