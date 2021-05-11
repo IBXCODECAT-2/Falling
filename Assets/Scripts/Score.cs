@@ -13,7 +13,7 @@ public class Score : MonoBehaviour
     {
         while(true)
         {
-            score.text = "Depth: " + player.position.y.ToString();
+            score.text = Time.time.ToString();
             yield return new WaitForSeconds(updateSpeed);
         }
     }
