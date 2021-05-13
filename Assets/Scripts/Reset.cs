@@ -9,7 +9,6 @@ public class Reset : MonoBehaviour
     {
         if(Input.GetKeyDown(KeyCode.Return))
         {
-            load.SetActive(true);
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
     }
