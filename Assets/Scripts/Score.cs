@@ -13,8 +13,11 @@ public class Score : MonoBehaviour
     {
         while(true)
         {
-            score.text = "Time: " + Time.time.ToString();
-            score.text += "\nDepth: " + player.transform.position.y.ToString();
+            score.text = "Copyright (C) 2021 IBXCODECAT [Nathan Schmitt]";
+            score.text += "\nPos: " + player.transform.position.ToString();
+            score.text += "\nTime: " + Time.time + "Delta: " + Time.deltaTime + "Uncaled: " + Time.unscaledDeltaTime + "Fixed: " + Time.fixedDeltaTime;
+            score.text += "\nFrame Count: " + Time.frameCount;
+            score.text += "\nAssets: " + Application.streamingAssetsPath + "\nPersistant: " + Application.persistentDataPath;
             yield return new WaitForSeconds(updateSpeed);
         }
     }

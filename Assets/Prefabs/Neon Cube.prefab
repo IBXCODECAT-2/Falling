@@ -48,6 +48,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   explosionObject: {fileID: 2376352210966414431, guid: a0a97d2aea7c49240a0a27373434a317,
     type: 3}
+  explosionIntensity: 4
 --- !u!65 &6971497244220289272
 BoxCollider:
   m_ObjectHideFlags: 0
