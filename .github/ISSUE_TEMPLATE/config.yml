@@ -1,5 +1,8 @@
 blank_issues_enabled: false
 contact_links:
+  - name: Project Documentation
+    url: https://github.com/IBXCODECAT/Falling/tree/main/Documentation
+    about: You can view the project documentation here.
   - name: GitHub Community Support
     url: https://github.community/
     about: Please ask and answer questions here.
