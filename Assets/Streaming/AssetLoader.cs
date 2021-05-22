@@ -58,6 +58,25 @@ public class AssetLoader : MonoBehaviour
             if(uwr.isNetworkError || uwr.isHttpError)
             {
                 Debug.LogError(uwr.error);
+                
+                int response = NativeWinAlert.Alert(
+                    "No Internet Connection",
+                    Application.productName + " requires an internet connection to stream game assets from our servers. Please connect to the internet or try again later.\n\nIf this problem persists, report it to the issue tracker at https://github.com/IBXCODECAT/Falling/issues and attatch the debug log output file located in \n\n" + Application.consoleLogPath + ".\n\nYou may continue in offline mode, but the game will be missing some functionality or visuals. (Not recomended)",
+                    NativeWinAlert.Options.cancelRetryContinue,
+                    NativeWinAlert.Icons.error
+                    );
+
+                Debug.Log(response);
+
+                switch(response)
+                {
+                    case 2: //Cancel
+                        UnityEngine.Diagnostics.Utils.ForceCrash(UnityEngine.Diagnostics.ForcedCrashCategory.Abort);
+                        break;
+                    case 10: //Retry
+                        LoadTextures();
+                        break;
+                }
             }
             else
             {

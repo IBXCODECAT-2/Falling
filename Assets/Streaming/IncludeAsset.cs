@@ -12,7 +12,6 @@ public class IncludeAsset : MonoBehaviour
     private void Awake()
     {
         assetLoader = FindObjectOfType<EventSystem>().GetComponent<AssetLoader>();
-        
         assetLoader.AssetStackAdd(gameObject, assetPath);
     }
 
