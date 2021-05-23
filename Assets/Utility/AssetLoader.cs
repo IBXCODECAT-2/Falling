@@ -7,20 +7,31 @@ using UnityEngine.UI;
 
 public class AssetLoader : MonoBehaviour
 {
+    
     public UnityWebRequest uwr;
-
-    [HideInInspector]
-    public bool assetsLoaded;
+    public struct Status
+    {
+        public enum RawImageAssets {waiting, loading, complete};
+        public enum AudioAssets {waiting, loading, complete};
+        public enum TextAssets {waiting, loading, complete};
+    }
 
     Dictionary<GameObject, string> assets = new Dictionary<GameObject, string>();
+    List<byte> assetType = new List<byte>();
 
     private void Awake()
     {
+
         Debug.Log("StreamingAssets data path: " + Application.streamingAssetsPath);    
     }
 
     public void AssetStackAdd(GameObject go, string relpath)
     {
+        IncludeAsset includer = go.GetComponent<IncludeAsset>();
+        IncludeAsset.AssetType includerType = go.GetComponent<IncludeAsset>().assetType;
+        
+        
+
         assets.Add(go, relpath);
         Debug.Log("Asset " + go + " @ " + relpath + " was added to the asset stack");
     }
@@ -38,7 +49,7 @@ public class AssetLoader : MonoBehaviour
             StartCoroutine(UpdateAssetsCo(asset));
         }
 
-        assetsLoaded = true;
+        //assetsLoaded = true;
         Debug.Log("All assets loaded!", gameObject);
     }
 
@@ -85,8 +96,17 @@ public class AssetLoader : MonoBehaviour
             }
             else
             {
-                asset.Key.GetComponent<RawImage>().texture = DownloadHandlerTexture.GetContent(uwr);
-                Debug.Log("Asset " + asset + " is being loaded");
+                try
+                {
+                    Debug.Log("Attempting to load asset '" + asset + "' as raw image.");
+                    asset.Key.GetComponent<RawImage>().texture = DownloadHandlerTexture.GetContent(uwr);
+                    Debug.Log("Asset " + asset + " loaded");
+                }
+                catch
+                {
+                    Debug.Log("Failed to load asset '" + asset + "' as raw image.");
+                }
+
             }
         }
     }

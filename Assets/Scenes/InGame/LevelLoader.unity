@@ -251,7 +251,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 83acd80694abe5e44ad7310249a39195, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  assetsLoaded: 0
 --- !u!114 &381148998
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -384,6 +383,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b458b21065ff5e846ba2de234ea496e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  assetType: 0
   assetPath: /gui/backdrop.png
 --- !u!1 &662164962
 GameObject:
