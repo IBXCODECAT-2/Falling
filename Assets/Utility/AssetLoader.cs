@@ -60,21 +60,26 @@ public class AssetLoader : MonoBehaviour
                 Debug.LogError(uwr.error);
                 
                 int response = NativeWinAlert.Alert(
-                    "No Internet Connection",
-                    Application.productName + " requires an internet connection to stream game assets from our servers. Please connect to the internet or try again later.\n\nIf this problem persists, report it to the issue tracker at https://github.com/IBXCODECAT/Falling/issues and attatch the debug log output file located in \n\n" + Application.consoleLogPath + ".\n\nYou may continue in offline mode, but the game will be missing some functionality or visuals. (Not recomended)",
+                    "Asset Streaming Error",
+                    "An asset could not be found at the following filepath:\n\n" + Application.streamingAssetsPath + asset.Value + "\n\n" + Application.productName + " requires an internet connection to stream game assets. Please verify that you are connected to the internet and try again. If the problem persists, make sure that you have the asset '" + asset.Value + "' in your StreamingAssets directory.\n\nIf you still see this error try re-installing the " + Application.productName + " and report the issue to the issue tracker at https://github.com/IBXCODECAT/Falling/issues and attatch the debug log output file located in \n\n" + Application.consoleLogPath + "\n\nNote that you may continue to play the game in offline mode by choosing 'continue', but the game will be missing some functionality and visuals. (Not recomended)",
                     NativeWinAlert.Options.cancelRetryContinue,
                     NativeWinAlert.Icons.error
                     );
 
-                Debug.Log(response);
+                Debug.Log("NativeWinAlertResponse: " + response);
 
                 switch(response)
                 {
                     case 2: //Cancel
-                        UnityEngine.Diagnostics.Utils.ForceCrash(UnityEngine.Diagnostics.ForcedCrashCategory.Abort);
+                        Debug.Log("Quitting the application.");
+                        Application.Quit();
                         break;
                     case 10: //Retry
+                        Debug.Log("Trying again...");
                         LoadTextures();
+                        break;
+                    default:
+                        NativeWinAlert.Alert("Missing Assets", Application.productName + " is about to load a level with missing assets. The game may not function properly.", NativeWinAlert.Options.ok, NativeWinAlert.Icons.warn);
                         break;
                 }
             }
