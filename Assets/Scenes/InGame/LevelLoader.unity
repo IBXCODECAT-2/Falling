@@ -251,6 +251,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 83acd80694abe5e44ad7310249a39195, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  assetType: 0
+  assetPath: 
+  stackId: 0
+  audioAssets: 0
+  textureAssets: 0
+  textAssets: 0
 --- !u!114 &381148998
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -415,7 +421,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: a9ec26723bdd3954db0f7e3c1db46a88, type: 3}
+  m_audioClip: {fileID: 8300000, guid: 7f02562857315db44813502258eecaad, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1

@@ -1,73 +1,109 @@
-﻿using UnityEngine;
-using System.IO;
-using UnityEngine.Networking;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.UI;
 
-public class AssetLoader : MonoBehaviour
+public class AssetLoader : IncludeAsset
 {
-    
     public UnityWebRequest uwr;
-    public struct Status
+    
+    private Dictionary<GameObject, string> assets = new Dictionary<GameObject, string>();
+    private List<int> assetTypes = new List<int>();
+
+    public int stackId;
+
+    public struct InitProcedureRelay
     {
-        public enum RawImageAssets {waiting, loading, complete};
-        public enum AudioAssets {waiting, loading, complete};
-        public enum TextAssets {waiting, loading, complete};
+        public enum AudioAssets { stacking, requesting, initializing, ready, error};
+        public enum TextureAssets {stacking, requesting, initializing, ready, error};
+        public enum TextAssets {stacking, requesting, initializing, ready, error};
     }
 
-    Dictionary<GameObject, string> assets = new Dictionary<GameObject, string>();
-    List<byte> assetType = new List<byte>();
+    public InitProcedureRelay.AudioAssets audioAssets;
+    public InitProcedureRelay.TextureAssets textureAssets;
+    public InitProcedureRelay.TextAssets textAssets;
 
+
+    //Do not run anything relating to asset InitProcedures in awake, awake is used by IncludeAsset.cs for stacking.
     private void Awake()
     {
-
-        Debug.Log("StreamingAssets data path: " + Application.streamingAssetsPath);    
+        Debug.Log("Clearing assets dictionary!");
+        assets.Clear();
+        Debug.Log("StreamingAssets data path: " + Application.streamingAssetsPath);
     }
 
-    public void AssetStackAdd(GameObject go, string relpath)
+    public void AssetStackPush(GameObject go, string relpath) //Push a gameObject to the asset stack
     {
-        IncludeAsset includer = go.GetComponent<IncludeAsset>();
-        IncludeAsset.AssetType includerType = go.GetComponent<IncludeAsset>().assetType;
-        
-        
+        IncludeAsset includerRequest = go.GetComponent<IncludeAsset>();
+
+        switch (includerRequest.assetType)
+        {
+            case AssetType.audio:
+                audioAssets = InitProcedureRelay.AudioAssets.stacking;
+                assetTypes.Add(0);
+                break;
+
+            case AssetType.texture:
+                textureAssets = InitProcedureRelay.TextureAssets.stacking;
+                assetTypes.Add(1);
+                break;
+
+            case AssetType.text:
+                textAssets = InitProcedureRelay.TextAssets.stacking;
+                assetTypes.Add(2);
+                break;
+
+            default:
+                stackId++;
+                assets.Add(go, string.Empty);
+                assetTypes.Add(0xDEAD);
+                Debug.LogError("Unkown asset type: " + includerRequest.assetType + " can not be initialized. Index is 0xDEAD");
+                return;
+        }
+
+        stackId++;
 
         assets.Add(go, relpath);
-        Debug.Log("Asset " + go + " @ " + relpath + " was added to the asset stack");
+        Debug.Log("Asset " + go + " @ " + relpath + " with stack id: " + stackId + " was pushed to the asset stack");
     }
 
-    public void AssetStackRemove(GameObject go)
+    public void AssetStackPop(GameObject go) //Pop a gameObject off of the asset stack
     {
         assets.Remove(go);
-        Debug.Log("Asset " + go + " was removed from the asset stack");
+
+        Debug.Log("Asset " + go + " was popped off the asset stack");
     }
 
-    public void LoadTextures()
+    public void Initialize()
     {
         foreach(KeyValuePair<GameObject, string> asset in assets)
         {
-            StartCoroutine(UpdateAssetsCo(asset));
+            StartCoroutine(InitProcedure(asset));
         }
 
         //assetsLoaded = true;
         Debug.Log("All assets loaded!", gameObject);
     }
 
-    public static string GetFileLocation(string relPath)
+    public static string FileLocation(string relPath)
     {
         string path = Application.streamingAssetsPath + relPath;
         Debug.Log("Searching: " + path);
         return path;
     }
 
-    IEnumerator UpdateAssetsCo(KeyValuePair<GameObject, string> asset)
+    IEnumerator InitProcedure(KeyValuePair<GameObject, string> asset)
     {
-        using (uwr = UnityWebRequestTexture.GetTexture(GetFileLocation(asset.Value)))
+        using (uwr = UnityWebRequestTexture.GetTexture(FileLocation(asset.Value)))
         {
+            textureAssets = InitProcedureRelay.TextureAssets.requesting;
             yield return uwr.SendWebRequest();
 
             if(uwr.isNetworkError || uwr.isHttpError)
             {
+                textureAssets = InitProcedureRelay.TextureAssets.error;
+
                 Debug.LogError(uwr.error);
                 
                 int response = NativeWinAlert.Alert(
@@ -87,7 +123,7 @@ public class AssetLoader : MonoBehaviour
                         break;
                     case 10: //Retry
                         Debug.Log("Trying again...");
-                        LoadTextures();
+                        Initialize();
                         break;
                     default:
                         NativeWinAlert.Alert("Missing Assets", Application.productName + " is about to load a level with missing assets. The game may not function properly.", NativeWinAlert.Options.ok, NativeWinAlert.Icons.warn);
@@ -96,17 +132,11 @@ public class AssetLoader : MonoBehaviour
             }
             else
             {
-                try
-                {
-                    Debug.Log("Attempting to load asset '" + asset + "' as raw image.");
-                    asset.Key.GetComponent<RawImage>().texture = DownloadHandlerTexture.GetContent(uwr);
-                    Debug.Log("Asset " + asset + " loaded");
-                }
-                catch
-                {
-                    Debug.Log("Failed to load asset '" + asset + "' as raw image.");
-                }
+                textureAssets = InitProcedureRelay.TextureAssets.initializing;
 
+                Debug.Log("Attempting to load asset '" + asset + "' as raw image.");
+                asset.Key.GetComponent<RawImage>().texture = DownloadHandlerTexture.GetContent(uwr);
+                Debug.Log("Asset " + asset + " loaded");
             }
         }
     }

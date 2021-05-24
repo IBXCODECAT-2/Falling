@@ -15,11 +15,11 @@ public class IncludeAsset : MonoBehaviour
     private void Awake()
     {
         assetLoader = FindObjectOfType<UnityEngine.EventSystems.EventSystem>().GetComponent<AssetLoader>();
-        assetLoader.AssetStackAdd(gameObject, assetPath);
+        assetLoader.AssetStackPush(gameObject, assetPath);
     }
 
     private void Start()
     {
-        
+        assetLoader.Initialize();
     }
 }
