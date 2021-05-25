@@ -12,13 +12,16 @@ public class IncludeAsset : MonoBehaviour
 
     AssetLoader assetLoader;
 
-    private void Awake()
+    private void Awake() { VirtualAwake(); }
+    private void Start() { VirtualStart(); }
+
+    public virtual void VirtualAwake()
     {
         assetLoader = FindObjectOfType<UnityEngine.EventSystems.EventSystem>().GetComponent<AssetLoader>();
         assetLoader.AssetStackPush(gameObject, assetPath);
     }
 
-    private void Start()
+    public virtual void VirtualStart()
     {
         assetLoader.Initialize();
     }

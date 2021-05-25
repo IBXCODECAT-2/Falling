@@ -6,12 +6,7 @@ using UnityEngine.UI;
 
 public class AssetLoader : IncludeAsset
 {
-    public UnityWebRequest uwr;
-    
-    private Dictionary<GameObject, string> assets = new Dictionary<GameObject, string>();
-    private List<int> assetTypes = new List<int>();
-
-    public int stackId;
+    [HideInInspector] public int stackId;
 
     public struct InitProcedureRelay
     {
@@ -24,6 +19,10 @@ public class AssetLoader : IncludeAsset
     public InitProcedureRelay.TextureAssets textureAssets;
     public InitProcedureRelay.TextAssets textAssets;
 
+    public UnityWebRequest uwr;
+
+    private Dictionary<GameObject, string> assets = new Dictionary<GameObject, string>();
+    private List<int> assetTypes = new List<int>();
 
     //Do not run anything relating to asset InitProcedures in awake, awake is used by IncludeAsset.cs for stacking.
     private void Awake()
@@ -31,6 +30,16 @@ public class AssetLoader : IncludeAsset
         Debug.Log("Clearing assets dictionary!");
         assets.Clear();
         Debug.Log("StreamingAssets data path: " + Application.streamingAssetsPath);
+    }
+
+    public override void VirtualAwake()
+    {
+        return;
+    }
+
+    public override void VirtualStart()
+    {
+        return;
     }
 
     public void AssetStackPush(GameObject go, string relpath) //Push a gameObject to the asset stack
@@ -71,7 +80,6 @@ public class AssetLoader : IncludeAsset
     public void AssetStackPop(GameObject go) //Pop a gameObject off of the asset stack
     {
         assets.Remove(go);
-
         Debug.Log("Asset " + go + " was popped off the asset stack");
     }
 
